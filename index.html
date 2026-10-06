@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Chat Pulse</title>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></rc="https://cdn.jsdelivr.net/npm/chart.js"></script
+    font-family:Segoe UI,Arial,sans-serif;
+    background:#f6f8fb;
+    margin:0;
+    padding:20px;
+}
+
+h1{
+    text-align:center;
+}
+
+.upload{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+}
+
+.card{
+    background:white;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+    text-align:center;
+}
+
+.card h3{
+    margin:0;
+    color:#666;
+}
+
+.card .value{
+    font-size:32px;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+.chart-container{
+    background:white;
+    margin-top:25px;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>📈 Chat Pulse</h1>
+
+<div class="upload">
+    <input type="file" id="csvFile" accept=".csv">
+</div>
+
+<div class="cards">
+
+    <div class="card">
+        <h3>Total Chats</h3>
+        <div class="value" id="totalChats">0</div>
+    </div>
+
+    <div class="card">
+        <h3>CHAT_CHGCXL</h3>
+        <div class="value" id="chgcxl">0</div>
+    </div>
+
+    <div class="card">
+        <h3>CHAT_NEWBOOKING</h3>
+        <div class="value" id="newbooking">0</div>
+    </div>
+
+    <div class="card">
+        <h3>CHAT_SCHEDULE_CHANGE</h3>
+        <div class="value" id="schedule">0</div>
+    </div>
+
+    <div class="card">
+        <h3>CHAT_IROP</h3>
+        <div class="value" id="irop">0</div>
+    </div>
+
+</div>
+
+<div class="chart-container">
+    <canvas id="hourChart"></canvas>
+</div>
+
+<script>
+
+let chart;
+
+document.getElementById('csvFile').addEventListener('change', function(event){
+
+    const file = event.target.files[0];
+
+    Papa.parse(file,{
+        header:true,
+        skipEmptyLines:true,
+
+        complete:function(results){
+
+            const rows = results.data;
+
+            const chats = rows.filter(r =>
+                r["Media Type"]?.trim().toLowerCase() === "message"
+            );
+
+            document.getElementById("totalChats").innerText = chats.length;
+
+            const counts = {
+                CHAT_CHGCXL:0,
+                CHAT_NEWBOOKING:0,
+                CHAT_SCHEDULE_CHANGE:0,
+                CHAT_IROP:0
+            };
+
+            const hourly = {};
+
+            chats.forEach(chat=>{
+
+                const queue = chat["Queue"]?.trim();
+
+                if(counts[queue] !== undefined){
+                    counts[queue]++;
+                }
+
+                const dateText = chat["Date"];
+
+                if(dateText){
+
+                    const match = dateText.match(/(\d{1,2}):\d{2}\s(AM|PM)/);
+
+                    if(match){
+
+                        const hourLabel = match[0];
+
+                        hourly[hourLabel] =
+                            (hourly[hourLabel] || 0) + 1;
+                    }
+                }
+            });
+
+            document.getElementById("chgcxl").innerText =
+                counts.CHAT_CHGCXL;
+
+            document.getElementById("newbooking").innerText =
+                counts.CHAT_NEWBOOKING;
+
+            document.getElementById("schedule").innerText =
+                counts.CHAT_SCHEDULE_CHANGE;
+
+            document.getElementById("irop").innerText =
+                counts.CHAT_IROP;
+
+            buildChart(hourly);
+        }
+
+    });
+
+});
+
+function buildChart(hourly){
+
+    const labels = Object.keys(hourly);
+    const values = Object.values(hourly);
+
+    if(chart){
+        chart.destroy();
+    }
+
+    chart = new Chart(
+        document.getElementById('hourChart'),
+        {
+            type:'bar',
+
+            data:{
+                labels:labels,
+                datasets:[
+                    {
+                        label:'Chats',
+                        data:values
+                    }
+                ]
+            },
+
+            options:{
+                responsive:true
+            }
+        }
+    );
+}
+
+</script>
+
+</body>
+</html>
