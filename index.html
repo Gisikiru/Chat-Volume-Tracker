@@ -6,8 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Volume Tracker</title>
 
-    <link rel="stylesheet" href="css"https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papapript>
-    <script src="https://cdn.jsdelivr.net/npm/t>
+    <!-- 1. Importación correcta del archivo CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- 2. Importación correcta de PapaParse y Chart.js desde el CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -18,45 +22,37 @@
     </header>
 
     <section class="cards">
-
         <div class="card total">
             <h3>Total Chats</h3>
             <span id="totalChats">0</span>
         </div>
-
         <div class="card">
             <h3>CHGCXL</h3>
             <span id="chgcxl">0</span>
         </div>
-
         <div class="card">
             <h3>NEWBOOKING</h3>
             <span id="newbooking">0</span>
         </div>
-
         <div class="card">
             <h3>SCHEDULE CHANGE</h3>
             <span id="schedule">0</span>
         </div>
-
         <div class="card">
             <h3>IROP</h3>
             <span id="irop">0</span>
         </div>
-
     </section>
 
     <section class="chart-box">
-
         <div class="chart-header">
             <h2>Chats by Hour</h2>
         </div>
-
         <canvas id="hourChart"></canvas>
-
     </section>
 
-    js/app.jsscript>
+    <!-- 3. Importación correcta de tu archivo JavaScript local antes de cerrar el body -->
+    <script src="js/app.js"></script>
 
 </body>
 
