@@ -40,17 +40,17 @@ fetch("./data/interactions.csv")
                 const dateText = row["Date"];
 
                 if (dateText) {
+                    // Convertir el texto a un objeto Date real para tomar en cuenta el día y mes
+                    const dateObj = new Date(dateText);
 
-                    const match = dateText.match(/(\d+):\d+\s(AM|PM)/);
+                    if (!isNaN(dateObj)) {
+                        // Redondear a la hora en punto (minutos, segundos y milisegundos a 0)
+                        dateObj.setMinutes(0, 0, 0);
 
-                    if (match) {
-                        const hourNumber = match[1];
-                        const amPm = match[2];
-                        
-                        // Agrupa todo en el bloque de la hora en punto (Ej: "07:00 PM")
-                        const hourBucket = `${hourNumber}:00 ${amPm}`;
+                        // Obtener el valor numérico (timestamp) para usarlo como llave cronológica
+                        const timestamp = dateObj.getTime();
 
-                        hourlyCounts[hourBucket] = (hourlyCounts[hourBucket] || 0) + 1;
+                        hourlyCounts[timestamp] = (hourlyCounts[timestamp] || 0) + 1;
                     }
                 }
 
@@ -72,20 +72,28 @@ fetch("./data/interactions.csv")
 
 function buildChart(hourlyCounts) {
 
-    // Función auxiliar para convertir formato "07:00 PM" a 24 horas para ordenar correctamente
-    const parseHour = (timeStr) => {
-        const [time, modifier] = timeStr.split(" ");
-        let hour = parseInt(time, 10);
-        if (hour === 12) hour = 0;
-        if (modifier === "PM") hour += 12;
-        return hour;
-    };
+    // 1. Obtener las llaves (timestamps), convertirlas a números y ordenarlas de menor a mayor
+    const sortedTimestamps = Object.keys(hourlyCounts)
+                                   .map(ts => parseInt(ts, 10))
+                                   .sort((a, b) => a - b);
 
-    // Ordenar las etiquetas (horas) cronológicamente
-    const labels = Object.keys(hourlyCounts).sort((a, b) => parseHour(a) - parseHour(b));
+    // 2. Convertir los timestamps ya ordenados de regreso al formato de texto para las etiquetas (Ej: "08:00 PM")
+    const labels = sortedTimestamps.map(ts => {
+        const date = new Date(ts);
+        let hour = date.getHours();
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        
+        hour = hour % 12;
+        hour = hour ? hour : 12; // Si es 0, se convierte en 12
+        
+        // Agregar un cero inicial si es menor a 10 (Ej: "08" en vez de "8")
+        const hourStr = hour < 10 ? '0' + hour : hour;
+        
+        return `${hourStr}:00 ${ampm}`;
+    });
 
-    // Obtener los valores respetando el orden de las etiquetas
-    const values = labels.map(label => hourlyCounts[label]);
+    // 3. Obtener los valores respetando el nuevo orden
+    const values = sortedTimestamps.map(ts => hourlyCounts[ts]);
 
     new Chart(
         document.getElementById("hourChart"),
