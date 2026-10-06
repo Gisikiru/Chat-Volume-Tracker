@@ -25,9 +25,10 @@ fetch("./data/interactions.csv")
 
                 const mediaType = row["Media Type"]?.trim().toLowerCase();
 
+                /*
                 if (mediaType !== "message") {
                     return;
-                }
+                }*/
 
                 totalChats++;
 
