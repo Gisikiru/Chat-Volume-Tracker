@@ -1,0 +1,87 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#f4f7fb;
+    font-family:'Segoe UI',sans-serif;
+    padding:30px;
+}
+
+header{
+    margin-bottom:30px;
+}
+
+header h1{
+    color:#1e293b;
+    font-size:2rem;
+}
+
+header p{
+    color:#64748b;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    margin-bottom:30px;
+}
+
+.card{
+    background:white;
+    border-radius:16px;
+    padding:25px;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+    transition:.2s;
+}
+
+.card:hover{
+    transform:translateY(-3px);
+}
+
+.card h3{
+    color:#64748b;
+    font-size:.9rem;
+    margin-bottom:10px;
+}
+
+.card span{
+    font-size:2rem;
+    font-weight:bold;
+    color:#0f172a;
+}
+
+.total{
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #3b82f6
+    );
+}
+
+.total h3,
+.total span{
+    color:white;
+}
+
+.chart-box{
+    background:white;
+    border-radius:16px;
+    padding:25px;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+}
+
+.chart-header{
+    margin-bottom:20px;
+}
+
+.chart-header h2{
+    color:#1e293b;
+}
+
+canvas{
+    max-height:500px;
+}
